@@ -371,6 +371,7 @@ Every plugin repo in the HurleySk marketplace uses this pattern:
 - **Trigger**: push to default branch
 - **Skip if**: `github.actor == 'github-actions[bot]'` (prevents infinite loop from auto-bump commits)
 - **Logic**: Compare `plugin.json` version vs previous commit. If unchanged, auto-increment patch. If already bumped manually, use existing version.
+- **Tags**: Creates a git tag `v<version>` and pushes it. Claude Code uses these tags to resolve plugin versions during install.
 - **Then**: Dispatch `repository_dispatch` event `plugin-version-update` to `HurleySk/claude-plugins-marketplace` with `{plugin_name, version}`
 - **Requires**: `MARKETPLACE_PAT` secret (GitHub PAT with `repo` scope) and `permissions: contents: write`
 
