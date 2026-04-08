@@ -1,0 +1,19 @@
+{
+  "name": "skill-authoring",
+  "version": "1.0.0",
+  "description": "Claude Code skill for authoring and publishing skills to the HurleySk marketplace. Scaffolding, best practices, CI/CD setup, and marketplace registration.",
+  "author": {
+    "name": "Samuel Hurley",
+    "url": "https://github.com/HurleySk"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/HurleySk/claude-skill-authoring",
+  "repository": "https://github.com/HurleySk/claude-skill-authoring",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "authoring",
+    "marketplace",
+    "plugin"
+  ]
+}
