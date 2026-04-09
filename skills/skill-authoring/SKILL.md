@@ -180,17 +180,23 @@ git push
 
 The next time the skill repo is pushed, the CI/CD will auto-sync the version.
 
-#### Step 5: Cold-Read Validation
+#### Step 5: Quality Validation
 
-Launch a subagent that reads ONLY `$SKILL_REPO/skills/<SKILL_NAME>/SKILL.md` and evaluates:
+Run the skill-review checklist against the new skill:
 
-1. Can every step be executed without guessing?
-2. Are all commands concrete (not "build the project" but `dotnet build --configuration Release`)?
-3. Are prerequisite checks present with fix commands?
-4. Are placeholder variables defined before use?
-5. Would an agent following this blindly succeed?
+```
+/skill-authoring:skill-review checklist $SKILL_REPO/skills/<SKILL_NAME>/SKILL.md
+```
 
-Rate: PASS (all clear) or PARTIAL (list gaps). Fix any gaps before considering the skill done.
+This validates structure, completeness, resilience, safety, documentation, and cross-skill consistency. Fix any FAIL items before considering the skill done.
+
+For a deeper assessment (recommended for non-trivial skills), run the full review:
+
+```
+/skill-authoring:skill-review assess $SKILL_REPO
+```
+
+This evaluates the skill across 8 dimensions and produces a graded report with prioritized recommendations.
 
 ### `add-to [plugin-name]`
 
@@ -230,9 +236,9 @@ git push
 
 CI handles version bump and marketplace sync. The new skill is immediately available as `/<PLUGIN_NAME>:<NEW_SKILL_NAME>`.
 
-#### Step 6: Cold-Read Validation
+#### Step 6: Quality Validation
 
-Same as `new` Step 5 — launch a subagent to validate the new SKILL.md.
+Same as `new` Step 5 — run `/skill-authoring:skill-review checklist` on the new SKILL.md. For multi-skill plugins, the full `assess` is especially recommended since it checks cross-skill consistency.
 
 ### `help`
 
@@ -241,6 +247,8 @@ Show available commands and a summary of skill authoring best practices.
 **Commands:**
 - `/skill-authoring new <skill-name>` — Create a new skill as a standalone plugin repo with CI/CD and marketplace registration
 - `/skill-authoring add-to <plugin-name>` — Add a skill to an existing multi-skill plugin
+- `/skill-authoring:skill-review assess [path]` — Full 8-dimension quality assessment with graded report
+- `/skill-authoring:skill-review checklist [path]` — Quick pass/fail validation checklist
 - `/skill-authoring help` — Show this help
 
 **Quick reference — what makes a good skill:**
@@ -289,15 +297,35 @@ Derive `$TOOL_REPO` as the ancestor directory containing `MyTool.sln`.
 
 **Always include a `help` command.** List all available commands with one-line descriptions.
 
-### Testing
+**Design for resilience.** When writing skills that create hook scripts or safety mechanisms:
+- Fail closed, not open. If a dependency is missing, deny/error — don't silently allow.
+- Don't suppress errors with `2>/dev/null` on security-critical operations.
+- Validate config files exist AND are valid before using them.
+- Check environment variables before referencing them.
 
-**Cold-read validate every skill.** After writing, launch a subagent that:
-- Reads ONLY the SKILL.md (no other context)
-- Attempts to mentally trace through each command's workflow
-- Reports: Was every step clear? Did it need to guess anything? Were any commands incomplete?
-- Rates: PASS or PARTIAL with specific gaps
+**Cover all relevant tools.** Claude Code has separate `Bash` and `PowerShell` tools, and `Write`, `Edit`, `NotebookEdit` are all distinct. If your skill hooks into one, consider whether it should hook into all of them.
 
-If the subagent rates PARTIAL, fix the gaps and re-test.
+**Use shared configuration.** In multi-skill plugins, use a single config file (e.g., `safety-rules.json`) as the source of truth. Don't hardcode values in one skill that another skill stores in a config file.
+
+**Include lifecycle commands.** Beyond setup, consider: `status` (what's active?), `test` (is it working?), `disable/enable` (temporary bypass), `uninstall` (clean removal).
+
+### Quality Validation
+
+After writing any skill, validate it using the `skill-review` companion skill:
+
+```
+/skill-authoring:skill-review checklist <path-to-SKILL.md>
+```
+
+This runs a quick pass/fail check across structure, completeness, resilience, safety, and documentation.
+
+For non-trivial skills, run the full 8-dimension assessment:
+
+```
+/skill-authoring:skill-review assess <path-to-plugin>
+```
+
+This produces a graded report (A/B/C/D) with prioritized enhancement recommendations. Target grade A (all dimensions 4+/5) for production skills.
 
 ## Plugin Structure Reference
 

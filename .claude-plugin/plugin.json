@@ -1,7 +1,7 @@
 {
   "name": "skill-authoring",
-  "version": "1.0.3",
-  "description": "Claude Code skill for authoring and publishing skills to the HurleySk marketplace. Scaffolding, best practices, CI/CD setup, and marketplace registration.",
+  "version": "1.1.0",
+  "description": "Claude Code skills for authoring, reviewing, and publishing skills to the HurleySk marketplace. Scaffolding, 8-dimension quality assessment, best practices, CI/CD setup, and marketplace registration.",
   "author": {
     "name": "Samuel Hurley",
     "url": "https://github.com/HurleySk"
@@ -13,6 +13,9 @@
     "claude-code",
     "skills",
     "authoring",
+    "review",
+    "quality",
+    "assessment",
     "marketplace",
     "plugin"
   ]
