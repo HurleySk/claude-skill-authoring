@@ -167,7 +167,13 @@ Read `.claude-plugin/marketplace.json`, then add a new entry to the `plugins` ar
 }
 ```
 
-**4c. Update `README.md`** — add a row to the plugin table.
+**4c. Update the marketplace `README.md`** — add or update the row in the Available Plugins table. The table has columns `Plugin`, `Skills`, and `Description`. List ALL skills the plugin provides in the Skills column (e.g., `` `plugin-dev`, `testing`, `ui-review` ``). The description should be a concise summary covering all skills. Example:
+
+```markdown
+| **xrmtoolbox** | `plugin-dev`, `testing`, `ui-review` | Build, deploy, pack, publish, scaffold tests, mock IOrganizationService, smoke tests, UI testing, and UI best practices review for XrmToolBox plugins. |
+```
+
+**Keep the marketplace README in sync whenever skills are added, removed, or renamed.** This is the primary discovery surface for users browsing the marketplace.
 
 **4d. Commit and push the marketplace:**
 
@@ -225,7 +231,23 @@ Create `skills/<NEW_SKILL_NAME>/SKILL.md` with frontmatter and body following th
 - **`plugin.json`**: Update `description` to mention the new skill. Add relevant `keywords`. Bump the minor version (e.g., `1.0.3` -> `1.1.0`) since this adds functionality.
 - **`README.md`**: Add a section for the new skill with its commands.
 
-#### Step 5: Push
+#### Step 5: Update Marketplace README
+
+The marketplace README is the primary discovery surface for users. Update it whenever skills are added:
+
+```bash
+cd ~/source/repos/HurleySk/claude-plugins-marketplace
+```
+
+Update the Skills column in the Available Plugins table to include the new skill name. Update the Description column if the new skill adds a capability not covered by the existing description. Commit and push:
+
+```bash
+git add README.md
+git commit -m "Add <NEW_SKILL_NAME> skill to <PLUGIN_NAME> in README"
+git push
+```
+
+#### Step 6: Push the Plugin Repo
 
 ```bash
 cd ~/source/repos/HurleySk/claude-<PLUGIN_NAME>-skill
@@ -236,7 +258,7 @@ git push
 
 CI handles version bump and marketplace sync. The new skill is immediately available as `/<PLUGIN_NAME>:<NEW_SKILL_NAME>`.
 
-#### Step 6: Quality Validation
+#### Step 7: Quality Validation
 
 Same as `new` Step 5 — run `/skill-authoring:skill-review checklist` on the new SKILL.md. For multi-skill plugins, the full `assess` is especially recommended since it checks cross-skill consistency.
 
