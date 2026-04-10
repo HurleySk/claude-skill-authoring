@@ -21,13 +21,22 @@ Full multi-dimensional assessment of a skill or skill set. Follow these phases e
 Identify what you're reviewing.
 
 1. If the user provided a path, read the SKILL.md file(s) directly
-2. If the user provided a plugin name, find the plugin:
+2. If the user provided a plugin name (not a path), resolve the plugin location:
+   a. Check if a directory matching the name exists under the current working directory (e.g., `./plugin-name/skills/` or `./skills/`)
+   b. If not found locally, search the Claude Code plugins cache:
+      ```
+      Glob for ~/.claude/plugins/cache/*/[plugin-name]/ across all marketplaces
+      If multiple versions exist, use the latest (highest semver directory)
+      The resolved path is ~/.claude/plugins/cache/[marketplace]/[plugin-name]/[latest-version]/
+      ```
+   c. If not found in the cache either, tell the user the plugin was not found and suggest they provide an explicit path
+3. Once the plugin directory is resolved, discover its contents:
    ```
    Glob for skills/*/SKILL.md under the plugin directory
    Read .claude-plugin/plugin.json for metadata
    Read README.md for documented behavior
    ```
-3. Catalog every skill in the plugin:
+4. Catalog every skill in the plugin:
    - Name, description, commands
    - What tools/hooks/agents it creates or configures
    - What artifacts it generates (files, configs, scripts)
@@ -273,8 +282,8 @@ Report: **X/Y passed**, list of WARN and FAIL items with specific remediation.
 
 | Command | Description |
 |---------|-------------|
-| `/skill-authoring:skill-review assess [path]` | Full 8-dimension assessment with graded report |
-| `/skill-authoring:skill-review checklist [path]` | Quick pass/fail validation checklist |
+| `/skill-authoring:skill-review assess [path-or-plugin-name]` | Full 8-dimension assessment with graded report |
+| `/skill-authoring:skill-review checklist [path-or-plugin-name]` | Quick pass/fail validation checklist |
 | `/skill-authoring:skill-review help` | Show this help |
 
 **What it reviews:**
