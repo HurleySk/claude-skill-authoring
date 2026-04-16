@@ -1,6 +1,6 @@
 {
   "name": "skill-authoring",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Claude Code skills for authoring, reviewing, and publishing skills to the HurleySk marketplace. Scaffolding, 8-dimension quality assessment, best practices, CI/CD setup, and marketplace registration.",
   "author": {
     "name": "Samuel Hurley",

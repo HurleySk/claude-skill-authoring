@@ -325,6 +325,14 @@ Derive `$TOOL_REPO` as the ancestor directory containing `MyTool.sln`.
 - Validate config files exist AND are valid before using them.
 - Check environment variables before referencing them.
 
+**Understand hook decision behavior.** PreToolUse hooks have three decision types with different visibility:
+- `deny` — blocks the operation, reason shown to agent. Use for true safety gates.
+- `ask` — prompts the user for confirmation. **BUT: if the tool is auto-allowed in user settings, `ask` is silently auto-approved and the `permissionDecisionReason` is NOT surfaced to the agent.** Do not use `ask` for advisory messages.
+- `allow` + `additionalContext` — allows the operation AND injects text into the agent's context as a system reminder. **This is the correct pattern for non-blocking advisory messages** (e.g., reminders, warnings the agent should see but that shouldn't block the operation).
+- PostToolUse stdout does NOT reliably surface to the agent or user. Prefer PreToolUse `additionalContext` for injecting context.
+
+**Normalize Windows paths in hook scripts.** The harness sends `tool_input.file_path` with Windows backslashes (`C:\Users\...`). Bash glob patterns like `*/tasks/*.json` won't match backslash-separated paths. Always normalize with `sed 's|\\|/|g'` before glob matching. Better yet, put all JSON/path parsing in a separate Node.js file (invoked via `node "$SCRIPT_DIR/helper.js"`) to avoid bash escape mangling — inline `node -e` scripts with regex containing backslashes get corrupted by bash's string processing.
+
 **Cover all relevant tools.** Claude Code has separate `Bash` and `PowerShell` tools, and `Write`, `Edit`, `NotebookEdit` are all distinct. If your skill hooks into one, consider whether it should hook into all of them.
 
 **Use shared configuration.** In multi-skill plugins, use a single config file (e.g., `safety-rules.json`) as the source of truth. Don't hardcode values in one skill that another skill stores in a config file.

@@ -73,6 +73,8 @@ Ask: "Will this skill work on every platform where the plugin can be installed?"
   - Can scripts be rewritten in Node.js for true cross-platform?
   - Are there PowerShell equivalents needed?
 - **Path separators**: Does the skill handle `\` vs `/` correctly?
+  - **Hook scripts specifically**: The harness sends `tool_input.file_path` with Windows backslashes. Bash glob patterns (`*/dir/*.json`) won't match. Look for path normalization (`sed 's|\\|/|g'`) before any glob/pattern matching.
+  - **Inline node `-e` scripts**: Regex with backslashes in bash `-e` strings gets mangled by bash's escape processing. Look for this anti-pattern and recommend separate `.js` files invoked via `node "$SCRIPT_DIR/helper.js"`.
 - **Command availability**: Does it assume commands exist without checking? (`node`, `jq`, `grep -E` vs `grep -P`, etc.)
 - **Environment variables**: Are OS-specific env vars used? (`$HOME` vs `$USERPROFILE`, etc.)
 
@@ -90,6 +92,11 @@ Ask: "What happens when things go wrong? Does it fail safely?"
   - File dependencies (config files, rule files, scripts it references)
   - Environment dependencies (`$CLAUDE_PROJECT_DIR`, `$HOME`, etc.)
 - **Corrupt input handling**: What if config files have invalid JSON? What if hook input is malformed?
+- **Hook decision visibility**: If the skill creates PreToolUse hooks, does it use the right decision type?
+  - `ask` is silently auto-approved when the tool is auto-allowed — the reason text is swallowed entirely
+  - `allow` + `additionalContext` is the correct pattern for non-blocking advisory messages
+  - `deny` is the only decision guaranteed to surface to the agent
+  - PostToolUse stdout does not reliably surface to agents
 - **Partial execution**: If the skill's workflow is interrupted mid-way, what state is left behind? Can the user recover?
 
 ##### Dimension 4: Cross-Skill Consistency
@@ -364,3 +371,6 @@ For safety-critical skills, the correct default is DENY, not ALLOW.
 | Fail-open defaults in safety hooks | Creates false confidence — worse than no hook at all | Fail-closed: deny when uncertain |
 | No lifecycle commands beyond setup | Users can't maintain, validate, or remove the skill | Add status, test, disable/enable, uninstall |
 | Patterns that only match one variant | Attackers/mistakes use the unmatched variant | Enumerate all known variants, document gaps |
+| Using `ask` for advisory messages in hooks | `ask` is silently auto-approved when tool is auto-allowed — message never reaches agent | Use `allow` + `additionalContext` for non-blocking reminders |
+| Inline `node -e` with regex in bash hooks | Bash mangles backslash escapes in `-e` strings, silently breaking regex patterns | Put node logic in a separate `.js` file, invoke via `node "$SCRIPT_DIR/file.js"` |
+| No path normalization in hook scripts | Windows sends backslash paths; bash globs (`*/dir/*.json`) don't match `\`-separated paths | Normalize with `sed 's|\\|/|g'` or parse paths in node |
