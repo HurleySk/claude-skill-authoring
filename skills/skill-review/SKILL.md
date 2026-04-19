@@ -1,6 +1,6 @@
 ---
 name: skill-review
-description: Use when assessing an existing skill or skill set for quality, gaps, and enhancement opportunities — performs a comprehensive multi-dimensional review covering safety, coverage, platform compatibility, resilience, usability, cross-skill consistency, and documentation.
+description: Use when assessing an existing skill or skill set for quality, gaps, and enhancement opportunities — performs a comprehensive 9-dimension review covering safety, coverage, platform compatibility, resilience, usability, cross-skill consistency, documentation, and activation.
 argument-hint: "[assess|checklist|help] [skill-path-or-plugin-name]"
 ---
 
@@ -43,7 +43,7 @@ Identify what you're reviewing.
 
 #### Phase 2: Multi-Dimensional Analysis
 
-For EACH skill, evaluate across these 8 dimensions. Launch up to 3 Explore agents in parallel for thorough analysis of the skill content.
+For EACH skill, evaluate across these 9 dimensions. Launch up to 3 Explore agents in parallel for thorough analysis of the skill content.
 
 ##### Dimension 1: Coverage Completeness
 
@@ -158,6 +158,23 @@ Ask: "Does the skill explain itself well enough for users AND for agents?"
 - **Known limitations**: Are gaps honestly documented?
 - **Examples**: Are there concrete examples for non-obvious operations?
 
+##### Dimension 9: Activation & Discoverability
+
+Ask: "Is this skill discoverable when the user needs it? Is the project's CLAUDE.md appropriately sized?"
+
+- **Activation rules**: Does the project have a `.claude/skills/skill-rules.json`? Are rules defined for each skill?
+- **Trigger quality**: Are keywords specific enough? Too broad = noise (e.g., "fix" triggers on every prompt). Too narrow = missed (e.g., only matching exact tool names).
+- **Enforcement levels**: Are they appropriate? `suggest` for guidance, `block` only for safety-critical guardrails. Is `sessionOnce` used for domain/suggest rules?
+- **CLAUDE.md size**: If CLAUDE.md exceeds 200 lines, has content been extracted into targeted `.claude/skills/` files?
+- **Custom hook awareness**: If custom enforcement hooks exist, does skill-engine avoid duplicating them (activate-only, not enforce)?
+- **Orphan skills**: Are all extracted skills reachable via activation rules? A skill with no trigger is invisible.
+- **Score 5**: Comprehensive activation with well-tuned triggers, appropriate enforcement, slim CLAUDE.md
+- **Score 4**: Activation present, triggers reasonable, minor gaps
+- **Score 3**: Basic activation or large CLAUDE.md without extraction
+- **Score 2**: skill-rules.json exists but triggers too broad/narrow or enforcement mismatched
+- **Score 1**: No activation despite large CLAUDE.md or complex project
+- **N/A**: Small project (CLAUDE.md <100 lines, few skills) where activation isn't needed
+
 #### Phase 3: Cross-Cutting Analysis
 
 After reviewing each dimension, synthesize cross-cutting findings:
@@ -200,6 +217,7 @@ Write the assessment to `output/skill-review-<plugin-name>.md` with this structu
 | Workflow | X/5 | ... |
 | Security | X/5 | ... |
 | Documentation | X/5 | ... |
+| Activation | X/5 | ... |
 
 ## Critical Findings
 (Findings that must be fixed — safety bypasses, silent failures, platform breaks)
@@ -223,7 +241,7 @@ Write the assessment to `output/skill-review-<plugin-name>.md` with this structu
 ```
 
 **Grading rubric:**
-- **A** = Production-grade. Minor polish items only. All 8 dimensions score 4+.
+- **A** = Production-grade. Minor polish items only. All 9 dimensions score 4+.
 - **B** = Solid with gaps. No critical issues but has high-priority findings. Most dimensions score 3+.
 - **C** = Functional but incomplete. Has critical or multiple high-priority gaps. Some dimensions score 2 or below.
 - **D** = Needs significant work. Multiple critical issues or fundamental design problems.
@@ -255,6 +273,7 @@ Run through each item. Report PASS, WARN, or FAIL for each.
 - [ ] Error/failure paths are handled (not just happy path)
 - [ ] Testing/verification steps are included
 - [ ] All relevant tools are covered (Bash AND PowerShell, Write AND Edit AND NotebookEdit)
+- [ ] Large CLAUDE.md (>200 lines) has activation rules or documented reason for not having them
 
 #### Resilience
 - [ ] No unguarded `2>/dev/null` on security-critical operations
@@ -295,7 +314,7 @@ Report: **X/Y passed**, list of WARN and FAIL items with specific remediation.
 
 **What it reviews:**
 
-The `assess` command evaluates skills across 8 dimensions:
+The `assess` command evaluates skills across 9 dimensions:
 1. **Coverage** — Does it handle all relevant tools, operations, and patterns?
 2. **Platform** — Will it work on Windows, macOS, and Linux?
 3. **Resilience** — Does it fail safely when things go wrong?
