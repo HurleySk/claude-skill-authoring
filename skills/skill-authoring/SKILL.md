@@ -204,6 +204,16 @@ For a deeper assessment (recommended for non-trivial skills), run the full revie
 
 This evaluates the skill across 8 dimensions and produces a graded report with prioritized recommendations.
 
+#### Step 6: Consider Activation Infrastructure
+
+If your skill will be used in repos with large CLAUDE.md files or needs context-aware triggering, run:
+
+```
+/skill-authoring:activation-setup analyze
+```
+
+This scans the repo and recommends whether activation rules would help. This is optional — skills work fine without activation, but it improves discoverability in complex projects.
+
 ### `add-to [plugin-name]`
 
 Add a new skill to an existing multi-skill plugin repo. This is for when a skill logically belongs alongside existing skills (e.g., adding a `testing` skill to a `plugin-dev` plugin).
@@ -271,6 +281,8 @@ Show available commands and a summary of skill authoring best practices.
 - `/skill-authoring add-to <plugin-name>` — Add a skill to an existing multi-skill plugin
 - `/skill-authoring:skill-review assess [path]` — Full 8-dimension quality assessment with graded report
 - `/skill-authoring:skill-review checklist [path]` — Quick pass/fail validation checklist
+- `/skill-authoring:activation-setup analyze` — Analyze repo for activation opportunities
+- `/skill-authoring:activation-setup setup` — Install activation infrastructure
 - `/skill-authoring help` — Show this help
 
 **Quick reference — what makes a good skill:**
@@ -339,6 +351,18 @@ Derive `$TOOL_REPO` as the ancestor directory containing `MyTool.sln`.
 
 **Include lifecycle commands.** Beyond setup, consider: `status` (what's active?), `test` (is it working?), `disable/enable` (temporary bypass), `uninstall` (clean removal).
 
+### Activation & Progressive Disclosure
+
+For skills that live in local repos (`.claude/skills/`), consider:
+
+- **Progressive disclosure**: If a SKILL.md exceeds ~500 lines, split into SKILL.md (core, <200 lines) + `resources/` directory (detailed references). The main skill routes Claude to the right resource.
+- **Activation rules**: Use `skill-rules.json` to surface skills based on prompt keywords and intent patterns. Install via the `skill-engine` plugin.
+- **Enforcement levels**: `suggest` (non-blocking prompt hint), `warn` (PreToolUse warning), `block` (PreToolUse prevention). Use `suggest` for guidance, `block` only for safety-critical guardrails.
+- **sessionOnce**: Set `true` for domain skills so they suggest once per session, not on every prompt.
+- **Don't replace custom hooks**: If a repo already has purpose-built enforcement hooks (like safety-gate.sh), keep them. Use skill-engine for activation only.
+
+See `/skill-authoring:activation-setup` for guided setup.
+
 ### Quality Validation
 
 After writing any skill, validate it using the `skill-review` companion skill:
@@ -349,7 +373,7 @@ After writing any skill, validate it using the `skill-review` companion skill:
 
 This runs a quick pass/fail check across structure, completeness, resilience, safety, and documentation.
 
-For non-trivial skills, run the full 8-dimension assessment:
+For non-trivial skills, run the full 9-dimension assessment:
 
 ```
 /skill-authoring:skill-review assess <path-to-plugin>
