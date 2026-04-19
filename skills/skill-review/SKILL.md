@@ -308,7 +308,7 @@ Report: **X/Y passed**, list of WARN and FAIL items with specific remediation.
 
 | Command | Description |
 |---------|-------------|
-| `/skill-authoring:skill-review assess [path-or-plugin-name]` | Full 8-dimension assessment with graded report |
+| `/skill-authoring:skill-review assess [path-or-plugin-name]` | Full 9-dimension assessment with graded report |
 | `/skill-authoring:skill-review checklist [path-or-plugin-name]` | Quick pass/fail validation checklist |
 | `/skill-authoring:skill-review help` | Show this help |
 
@@ -323,6 +323,7 @@ The `assess` command evaluates skills across 9 dimensions:
 6. **Workflow** — Can an agent follow it blindly and succeed?
 7. **Security** — Does it create new attack surfaces or false confidence?
 8. **Documentation** — Are prerequisites, limitations, and lessons documented?
+9. **Activation** — Is the skill discoverable via activation rules? Is CLAUDE.md appropriately sized?
 
 **Grading:**
 - **A** = Production-grade (all dimensions 4+/5)

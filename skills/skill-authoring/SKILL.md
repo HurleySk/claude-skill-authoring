@@ -202,7 +202,7 @@ For a deeper assessment (recommended for non-trivial skills), run the full revie
 /skill-authoring:skill-review assess $SKILL_REPO
 ```
 
-This evaluates the skill across 8 dimensions and produces a graded report with prioritized recommendations.
+This evaluates the skill across 9 dimensions and produces a graded report with prioritized recommendations.
 
 #### Step 6: Consider Activation Infrastructure
 
@@ -279,7 +279,7 @@ Show available commands and a summary of skill authoring best practices.
 **Commands:**
 - `/skill-authoring new <skill-name>` — Create a new skill as a standalone plugin repo with CI/CD and marketplace registration
 - `/skill-authoring add-to <plugin-name>` — Add a skill to an existing multi-skill plugin
-- `/skill-authoring:skill-review assess [path]` — Full 8-dimension quality assessment with graded report
+- `/skill-authoring:skill-review assess [path]` — Full 9-dimension quality assessment with graded report
 - `/skill-authoring:skill-review checklist [path]` — Quick pass/fail validation checklist
 - `/skill-authoring:activation-setup analyze` — Analyze repo for activation opportunities
 - `/skill-authoring:activation-setup setup` — Install activation infrastructure
